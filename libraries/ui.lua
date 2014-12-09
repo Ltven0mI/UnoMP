@@ -16,6 +16,8 @@ ui.var.fgIdleAux = {r=0,g=0,b=0,a=255}
 ui.var.fgActiveAux = {r=0,g=0,b=0,a=255}
 ui.var.fgHoverAux = {r=0,g=0,b=0,a=255}
 
+ui.var.drawColor = {r=255,g=255,b=255,a=255}
+
 ui.var.mode = "screen"
 ui.var.style = "fill"
 ui.var.lineWidth = 1
@@ -63,54 +65,58 @@ end
 function ui.setColor(cType,cState,color,aux)
 	if cType and type(cType) == "string" and cState and type(cState) == "string" and color and type(color) == "table" then
 		if not aux then aux = false end
-		if aux == false then
-			if cType == "fg" then
-				if cState == "idle" then
-					ui.var.fgIdle = color
-				elseif cState == "hover" then
-					ui.var.fgHover = color
-				elseif cState == "active" then
-					ui.var.fgActive = color
+		if cType ~= "draw" then
+			if aux == false then
+				if cType == "fg" then
+					if cState == "idle" then
+						ui.var.fgIdle = color
+					elseif cState == "hover" then
+						ui.var.fgHover = color
+					elseif cState == "active" then
+						ui.var.fgActive = color
+					else
+						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
+					end
+				elseif cType == "bg" then
+					if cState == "idle" then
+						ui.var.bgIdle = color
+					elseif cState == "hover" then
+						ui.var.bgHover = color
+					elseif cState == "active" then
+						ui.var.bgActive = color
+					else
+						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
+					end
 				else
-					debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
-				end
-			elseif cType == "bg" then
-				if cState == "idle" then
-					ui.var.bgIdle = color
-				elseif cState == "hover" then
-					ui.var.bgHover = color
-				elseif cState == "active" then
-					ui.var.bgActive = color
-				else
-					debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
+					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
 				end
 			else
-				debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
+				if cType == "fg" then
+					if cState == "idle" then
+						ui.var.fgIdleAux = color
+					elseif cState == "hover" then
+						ui.var.fgHoverAux = color
+					elseif cState == "active" then
+						ui.var.fgActiveAux = color
+					else
+						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
+					end
+				elseif cType == "bg" then
+					if cState == "idle" then
+						ui.var.bgIdleAux = color
+					elseif cState == "hover" then
+						ui.var.bgHoverAux = color
+					elseif cState == "active" then
+						ui.var.bgActiveAux = color
+					else
+						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
+					end
+				else
+					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
+				end
 			end
 		else
-			if cType == "fg" then
-				if cState == "idle" then
-					ui.var.fgIdleAux = color
-				elseif cState == "hover" then
-					ui.var.fgHoverAux = color
-				elseif cState == "active" then
-					ui.var.fgActiveAux = color
-				else
-					debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
-				end
-			elseif cType == "bg" then
-				if cState == "idle" then
-					ui.var.bgIdleAux = color
-				elseif cState == "hover" then
-					ui.var.bgHoverAux = color
-				elseif cState == "active" then
-					ui.var.bgActiveAux = color
-				else
-					debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
-				end
-			else
-				debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
-			end
+			ui.var.drawColor = color
 		end
 	else
 		debug.log("[ERROR] Incorrect call to function 'ui.setColor(cType,cState,color,aux)'")
@@ -269,7 +275,7 @@ function ui.draw(drawable,x,y,w,h,r)
 		if not w then w = iw end
 		if not h then h = ih end
 		if not r then r = 0 end
-		love.graphics.setColor(255,255,255,255)
+		ui.setCurrentColor(ui.var.drawColor)
 		if quad == nil then
 			love.graphics.draw(drawable, x+w/2, y+h/2, math.rad(r), w/iw, h/ih, iw/2, ih/2)
 		else
