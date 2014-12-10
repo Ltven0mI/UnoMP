@@ -5,30 +5,22 @@ game.runPriority = 17
 game.currentCard = nil
 game.player = {cards={}}
 
-game.handSize = 10
+game.handSize = 6
 game.colour = "blue"
 game.type = "0"
 
 game.isTurn = true
+game.chooseColour = false
 
 -- Callbacks --
 function game.load()
 
 end
 
-function game.keypressed(key)
-	if key == "v" then
-		game.addCard(object.new("card"))
-	end
-	if key == "b" then
-		game.startGame()
-	end
-end
-
 function game.draw()
 	if game.currentCard then
 		local cw, ch = (main.width+main.height)/10, (main.width+main.height)/10*1.5
-		local cx, cy = main.width/2-cw/2, main.height/2-ch/2
+		local cx, cy = main.width/2-cw/2-cw/2, main.height/2-ch/2
 		ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
 		if game.currentCard.up then
 			ui.draw(image.getImage("card_front_base"), cx, cy, cw, ch)
@@ -40,6 +32,38 @@ function game.draw()
 			ui.draw(image.getImage("card_decal_sides_"..game.currentCard.type), cx, cy, cw, ch)
 		end
 	end
+
+	local cw, ch = (main.width+main.height)/10, (main.width+main.height)/10*1.5
+	local cx, cy = main.width/2-cw/2, main.height/2-ch/2
+	if ui.imageButton(image.getImage("card_back"), cx+cw/2*1.1, cy, cw, ch) then
+		if game.currentCard == nil then game.startGame() end
+		if game.isTurn and not game.chooseColour then game.pickUp() end
+	end
+
+	if game.isTurn and game.chooseColour then
+		love.graphics.setColor(255,255,255,255)
+		love.graphics.print("Pick a colour.", 0, 0)
+		for key, col in pairs(card.colours) do
+			ui.push()
+				local cc = 4
+				local maxScale = (main.width/1.5)/game.handSize
+				local scale = math.clamp((main.width/1.5)/cc, 10, maxScale)
+				local cw, ch = scale, scale*1.5
+				local handWidth = cw*cc
+				local cx, cy = main.width/2-handWidth/2+cw*(key-1), main.height/1.2-ch/2-ch*1.1
+				ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
+				ui.draw(image.getImage("card_front_base"), cx, cy, cw, ch)
+				ui.setColor("bg", "idle", card.colourTable[col])
+				ui.setColor("bg", "hover", card.colourTable[col])
+				ui.setColor("bg", "active", card.colourTable[col])
+				if ui.imageButton(image.getImage("card_decal_base"), cx, cy, cw, ch) then
+					game.colour = col
+					game.chooseColour = false
+				end
+			ui.pop()
+		end
+	end
+
 	local count = 1
 	local player = game.player
 	for key, card in pairs(player.cards) do
@@ -49,13 +73,19 @@ function game.draw()
 		local cw, ch = scale, scale*1.5
 		local handWidth = cw*cc
 		local cx, cy = main.width/2-handWidth/2+cw*(count-1), main.height/1.2-ch/2
-		ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
+		ui.setColor("bg", "idle", {r=255,g=255,b=255,a=255})
 		if card.up then
 			if ui.imageButton(image.getImage("card_front_base"), cx, cy, cw, ch) then
-				if game.isTurn then
+				if game.isTurn and not game.chooseColour then
 					if game.playCard(card) then
 						player.cards[key] = nil
 						player.cardCount = player.cardCount - 1
+						if game.colour == "black" then
+							game.chooseColour = true
+						else
+							--game.isTurn = false
+							game.chooseColour = false
+						end
 					end
 				end
 			end
@@ -93,7 +123,11 @@ end
 
 function game.addCard(card)
 	game.player.cards[table.getn(game.player.cards)+1] = card
-	game.player.cardCount = player.cardCount + 1
+	game.player.cardCount = game.player.cardCount + 1
+end
+
+function game.pickUp()
+	game.addCard(object.new("card"))
 end
 
 function game.startGame()
@@ -102,6 +136,13 @@ function game.startGame()
 	local startCard = object.new("card")
 	if not tonumber(startCard.type) then startCard.type = tostring(math.random(0,9)); startCard:newColour() end
 	game.setCard(startCard)
+	game.chooseColour = false
+end
+
+function game.changeColour(col)
+	game.colour = col
+	game.chooseColour = false
+	game.isTurn = false
 end
 
 function game.dealHand(player)
