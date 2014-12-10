@@ -9,6 +9,8 @@ game.handSize = 10
 game.colour = "blue"
 game.type = "0"
 
+game.isTurn = true
+
 -- Callbacks --
 function game.load()
 
@@ -50,9 +52,11 @@ function game.draw()
 		ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
 		if card.up then
 			if ui.imageButton(image.getImage("card_front_base"), cx, cy, cw, ch) then
-				if game.playCard(card) then
-					player.cards[key] = nil
-					player.cardCount = player.cardCount - 1
+				if game.isTurn then
+					if game.playCard(card) then
+						player.cards[key] = nil
+						player.cardCount = player.cardCount - 1
+					end
 				end
 			end
 			ui.setColor("draw", "fg", card.colourTable[card.colour])
@@ -95,7 +99,9 @@ end
 function game.startGame()
 	local player = game.player
 	game.dealHand(player)
-	game.setCard(object.new("card"))
+	local startCard = object.new("card")
+	if not tonumber(startCard.type) then startCard.type = tostring(math.random(0,9)); startCard:newColour() end
+	game.setCard(startCard)
 end
 
 function game.dealHand(player)
