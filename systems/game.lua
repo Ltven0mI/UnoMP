@@ -21,8 +21,14 @@ function game.draw()
 	if game.currentCard then
 		local cw, ch = (main.width+main.height)/10, (main.width+main.height)/10*1.5
 		local cx, cy = main.width/2-cw/2-cw/2, main.height/2-ch/2
-		ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
 		if game.currentCard.up then
+			if game.currentCard.colour == "black" and game.colour ~= "black" then
+				ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
+				ui.draw(image.getImage("card_front_base"), cx-cw*0.1, cy-cw*0.1, cw, ch)
+				ui.setColor("draw", "fg", card.colourTable[game.colour])
+				ui.draw(image.getImage("card_decal_base"), cx-cw*0.1, cy-cw*0.1, cw, ch)
+			end
+			ui.setColor("draw", "fg", {r=255,g=255,b=255,a=255})
 			ui.draw(image.getImage("card_front_base"), cx, cy, cw, ch)
 			ui.setColor("draw", "fg", card.colourTable[game.currentCard.colour])
 			ui.draw(image.getImage("card_decal_base"), cx, cy, cw, ch)
