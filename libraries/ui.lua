@@ -88,7 +88,7 @@ function ui.setColor(cType,cState,color,aux)
 						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
 					end
 				else
-					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
+					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' 'bg' or 'draw'")
 				end
 			else
 				if cType == "fg" then
@@ -112,7 +112,7 @@ function ui.setColor(cType,cState,color,aux)
 						debug.log("[WARNING] Argument 'cState' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'idle' 'hover' or 'active'")
 					end
 				else
-					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' or 'bg'")
+					debug.log("[WARNING] Argument 'cType' in call to function 'ui.setColor(cType,cState,color,aux)' must be 'fg' 'bg' or 'draw'")
 				end
 			end
 		else
