@@ -15,4 +15,9 @@ function card:created()
 	if self.type == "wild" or self.type == "draw4" then self.colour = "black" end
 end
 
+-- Functions --
+function card:newColour()
+	self.colour = self.colours[math.random(1, table.getn(self.colours))]
+end
+
 return card
